@@ -23,7 +23,7 @@ Pré-requisitos:
 - Maven 
 - Docker & Docker Compose
 
-## Passo 1
+## Caminho
 Suba a API via Docker: 
 
 docker-compose up -d
