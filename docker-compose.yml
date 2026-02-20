@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  coupon_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: coupon_api:latest
+    container_name: coupon_api
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+

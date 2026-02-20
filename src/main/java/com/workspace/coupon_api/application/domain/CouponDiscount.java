@@ -1,6 +1,6 @@
 package com.workspace.coupon_api.application.domain;
 
-
+import com.workspace.coupon_api.application.exception.InvalidCouponDiscountException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -19,6 +19,9 @@ public class CouponDiscount {
         private BigDecimal value;
 
     public CouponDiscount(BigDecimal value) {
+        if (value == null) {
+            throw new InvalidCouponDiscountException("O valor do desconto não pode ser nulo");
+        }
             checkIfIsLessThanMinimumDiscount(value);
             this.value = value;
         }
@@ -26,7 +29,7 @@ public class CouponDiscount {
 
         private void checkIfIsLessThanMinimumDiscount(BigDecimal value) {
             if (value.compareTo(MINIMUM_DISCOUNT) < 0) {
-                throw new RuntimeException("O valor minimo de desconto é: " + MINIMUM_DISCOUNT);
+                throw new InvalidCouponDiscountException("O valor minimo de desconto é: " + MINIMUM_DISCOUNT);
             }
         }
 }

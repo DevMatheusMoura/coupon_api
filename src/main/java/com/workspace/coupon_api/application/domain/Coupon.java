@@ -1,5 +1,7 @@
 package com.workspace.coupon_api.application.domain;
 
+import com.workspace.coupon_api.application.exception.CouponAlreadyDeletedException;
+import com.workspace.coupon_api.application.exception.InvalidExpirationDateException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -62,12 +64,22 @@ public class Coupon {
         this.status = updateStatusFromPublished(published);
     }
 
-    public Coupon(@NotBlank String code, @NotBlank String description, @NotNull @Positive BigDecimal bigDecimal, @NotNull LocalDateTime localDateTime, @NotNull Boolean published) {
+    // implementação do construtor usado pelo serviço - converte valores primitivos para objetos de domínio
+    public Coupon(@NotBlank String code, @NotBlank String description, @NotNull @Positive BigDecimal discountValue, @NotNull LocalDateTime expirationDate, @NotNull Boolean published) {
+        this.code = new CouponCode(code);
+        this.description = description;
+        this.discount = new CouponDiscount(discountValue);
+        this.createdAt = LocalDateTime.now();
+        checkIfExpirationDateAsPassed(expirationDate);
+        this.expirationDate = expirationDate;
+        this.published = published;
+        this.status = updateStatusFromPublished(published);
+        this.redeemed = false;
     }
 
     private void checkIfExpirationDateAsPassed(LocalDateTime expirationDate) {
         if (expirationDate.isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("A data de expiração não deve estar no passado");
+            throw new InvalidExpirationDateException("A data de expiração não deve estar no passado");
         }
     }
 
@@ -83,7 +95,7 @@ public class Coupon {
 
     private void throwIfDeleted() {
         if (this.status.equals(CouponStatus.DELETED)) {
-            throw new RuntimeException("Coupon already deleted!");
+            throw new CouponAlreadyDeletedException("Coupon already deleted!");
         }
     }
 }

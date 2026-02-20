@@ -1,5 +1,6 @@
 package com.workspace.coupon_api.application.domain;
 
+import com.workspace.coupon_api.application.exception.InvalidCouponCodeException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -28,18 +29,19 @@ public class CouponCode {
     private static final Integer CODE_SIZE = 6;
 
     private void checkIfCodeIsBlanckOrNull(String code) {
-        if (code.isBlank()) {
-            throw new RuntimeException("O código não deve estar vazio");
+        if (code == null || code.isBlank()) {
+            throw new InvalidCouponCodeException("O código não deve estar vazio");
         }
     }
 
     private void checkSizeOfTheCode(String code) {
         if (code.length() != CODE_SIZE) {
-            throw new RuntimeException("O código deve ter o seu tamanho igual a " + CODE_SIZE);
+            throw new InvalidCouponCodeException("O código deve ter o seu tamanho igual a " + CODE_SIZE);
         }
     }
 
     private String removeEspecialCharacters(String code) {
+        if (code == null) return "";
         return code.replaceAll("[^a-zA-Z0-9]", "");
     }
 }
